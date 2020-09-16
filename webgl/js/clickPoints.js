@@ -51,7 +51,7 @@ function click(evento, gl, canvas, coordenadas) {
     // p.dot = d.vector*[x,y] = g.vector*[x',y'] = g.vector*A*[x,y] Que es A?
     var x = evento.clientX;
     var y = evento.clientY;
-    var rect = evento.target.getBoundingclientRect();
+    var rect = evento.target.getBoundingClientRect();
 
     //Conversion de cordenadas
     x = ((x - rect.left) - canvas.width / 2) * 2 / canvas.width;
