@@ -18,7 +18,7 @@ var FSHADER_SOURCE =
 
 function main() {
     //Recuperar el cavas
-    var canvas = document.getElementById("canvas");
+    var canvas = document.getElementById("canvasJaime");
     if (!canvas) {
         console.log("Fallo de carga del canvas");
         return;
