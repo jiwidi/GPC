@@ -1,82 +1,74 @@
-/*
-Seminario 1 PGC. Paint points function
-*/
+//Seminario #1 GPC
 
-// Vertices shader
+
+//Shader vertices
 var VSHADER_SOURCE =
-    'attribute vec4 position;       \n' +
-    'void main() {                  \n' +
-    '   gl_Position = position;     \n' +
-    '   gl_PointSize = 10.0;        \n' +
+    'attribute vec4 posicion;       \n' +
+    'void main(){                   \n' +
+    '  gl_Position = posicion;      \n' +
+    '  gl_PointSize = 10.0;         \n' +
+    '}       \n';
+
+
+var FSHADER_SOURCE =
+    'void main(){                   \n' +
+    '  gl_FragColor = vec4(1.0,0.0,0.0,1.0);      \n' +
     '}                              \n';
 
-// Fragments shader
-var FSHADER_SOURCE =
-    'void main() {                                  \n' +
-    '   gl_FraColor = vec4(1.0, 0.0, 0.0, 1.0);      \n' +
-    '}                                              \n';
 
 function main() {
-    // Get canvas where graphics are displayed
-    var canvas = document.getElementById("canvas")
-
+    //Recuperar el cavas
+    var canvas = document.getElementById("canvas");
     if (!canvas) {
-        console.log("Error loading canvas");
+        console.log("Fallo de carga del canvas");
         return;
     }
 
-    // Get render context
-    var gl = getWebGLContext(canvas);
+    // Recuperar el contexto de render
+    var gl = getWebGLContext(canvas)
     if (!gl) {
-        conlose.log("Error loading the context render");
+        console.log("Fallo de carga del contexto del render");
         return;
     }
 
-    // Load, compile and mount shaders in a 'program'
+    // Cargar, compilar y montar los shaders en un 'program'
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
-        console.log("Error loading shaders");
+        console.log("Se ha liado en la carga de los shaders")
         return;
     }
 
-    // Set clear color
-    gl.clearColor(1.0, 0.0, 0.0, 1.0);
-    // Clear canvas
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(0.0, 0.0, 0.3, 1.0);
+    gl.clear(gl.COLOR_BUGGET_BIT);
+    var coordenadas = gl.getAttribLocation(gl.program, 'posicion');
 
-    // Localize the attribute in the vertices shader
-    var coordinates = gl.getAttribLocation(gl.program, 'position');
-
-    // Register event
-    canvas.onmousedown = function (event) {
-        click(event, gl, canvas, coordinates);
-    };
-
+    canvas.onmousedown = function (evento) {
+        click(evento, gl, canvas, coordenadas)
+    }
 }
 
-// Points drawn array
-// Line strips
-var points = [];
+var puntos = []; //Array de puntos
+function click(evento, gl, canvas, coordenadas) {
+    // p.dot = d.vector*[x,y] = g.vector*[x',y'] = g.vector*A*[x,y] Que es A?
+    var x = evento.clientX;
+    var y = evento.clientY;
+    var rect = evento.target.getBoundingclientRect();
 
-function click(event, gl, canvas, coordinates) {
-    // Get clicked point
-    var x = event.clientX;
-    var y = event.clientY;
-    var rect = event.target.getBoundingClientRect();
-
-    // Coordinate conversion
+    //Conversion de cordenadas
     x = ((x - rect.left) - canvas.width / 2) * 2 / canvas.width;
     y = (canvas.height / 2 - (y - rect.top)) * 2 / canvas.height;
 
-    // Save point
-    points.push(x);
-    points.push(y);
+    //Guardar los puntos
+    puntos.push(x);
+    puntos.push(y);
 
-    // Clear canvas
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    //Borrar el canvas
+    gl.clear(gl.COLOR_BUGGET_BIT);
 
-    // Insert coordinates of points as an attribute and draw them
-    for (var i = 0; i < points.length; i += 2) {
-        gl.vertexAttrib3f(coordinates, points[i], points[i + 1], 0.0);
+    //Inserta las coodenadas de los puntos como atributos y los dibuja uno a uno
+
+    for (var i = 0; i < puntos.length; i += 2) {
+        gl.vertexAttrib3f(coordenadas, puntos[i], puntos[i + 1], 0.0);
         gl.drawArrays(gl.POINTS, 0, 1);
     }
+
 }
