@@ -21,4 +21,5 @@ function main() {
 
     //Se borra el canvas
     gl.clear(gl.COLOR_BUGGER_BIT)
+    return;
 }
