@@ -58,26 +58,18 @@ function loadScene() {
     robot = new THREE.Object3D();
 
     /// Modelo externo
-    var loader = new THREE.ObjectLoader();
-    loader.load('models/soldado/soldado.json',
-        function (obj) {
-            obj.position.set(0, 1, 0);
-            cubo.add(obj);
-        });
 
 
     // Organizacion de la escena
     robot.add(base);
     base.add(new THREE.AxisHelper(1));
+    scene.add(robot);
     // esferacubo.add(esfera);
-    // scene.add(esferacubo);
     // scene.add(new THREE.AxisHelper(3));
 }
 
 function update() {
     // Variacion de la escena entre frames
-    angulo += Math.PI / 100;
-    esferacubo.rotation.y = angulo;
 }
 
 function render() {
