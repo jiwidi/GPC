@@ -46,22 +46,16 @@ function loadScene() {
     });
 
     // Geometrias
+    var plano = new THREE.PlaneGeometry(500, 500);
     var geocubo = new THREE.BoxGeometry(2, 2, 2);
     var geoesfera = new THREE.SphereGeometry(1, 30, 30);
+    var ciclindroAlto = new THREE.CylinderGeometry(4, 80, 4);
+    var cilindroBajo = new THREE.CylinderGeometry(50, 15, 50);
 
     // Objetos
-
-    var cubo = new THREE.Mesh(geocubo, material);
-    /// Orden de las transformaciones TRS
-    cubo.rotation.y = Math.PI / 4;
-    cubo.position.x = -1;
-    var esfera = new THREE.Mesh(geoesfera, material);
-    esfera.position.x = 1;
-
+    var base = new THREE.Mesh(cilindroBajo, material);
     /// Objeto contenedor
-    esferacubo = new THREE.Object3D();
-    esferacubo.position.y = 0.5;
-    esferacubo.rotation.y = angulo;
+    robot = new THREE.Object3D();
 
     /// Modelo externo
     var loader = new THREE.ObjectLoader();
@@ -73,11 +67,11 @@ function loadScene() {
 
 
     // Organizacion de la escena
-    esferacubo.add(cubo);
-    cubo.add(new THREE.AxisHelper(1));
-    esferacubo.add(esfera);
-    scene.add(esferacubo);
-    scene.add(new THREE.AxisHelper(3));
+    robot.add(base);
+    base.add(new THREE.AxisHelper(1));
+    // esferacubo.add(esfera);
+    // scene.add(esferacubo);
+    // scene.add(new THREE.AxisHelper(3));
 }
 
 function update() {
