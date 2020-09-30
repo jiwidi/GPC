@@ -31,7 +31,7 @@ function init() {
     // Camara
     var ar = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(40, ar, 1, 2000);
-    camera.position.set(350, 350, 350);
+    camera.position.set(300, 300, 300);
     camera.lookAt(new THREE.Vector3(0, 60, 0));
     scene.add(camera);
 }
@@ -44,13 +44,17 @@ function loadScene() {
         color: 'red',
         wireframe: true
     });
+    var material_pinzas = new THREE.MeshBasicMaterial({
+        color: 'yellow',
+        wireframe: true
+    });
 
     // Geometrias
     var rotula = new THREE.SphereGeometry(20, 20, 20);
     var robot_base = new THREE.CylinderGeometry(50, 50, 15, 32);
     var eje = new THREE.CylinderGeometry(20, 20, 18, 32);
     var esparrago = new THREE.BoxGeometry(18, 120, 12);
-    var disco = new THREE.CylinderGeometry(22, 22, 6, 32);
+    var disco = new THREE.CylinderGeometry(22, 22, 6, 20);
     var nervio = new THREE.BoxGeometry(4, 80, 4);
     var mano = new THREE.CylinderGeometry(15, 15, 40, 32);
     /// Construcción de las pinzas
@@ -74,14 +78,14 @@ function loadScene() {
     var brazo_eje = new THREE.Mesh(eje, material);
     var brazo_esparrago = new THREE.Mesh(esparrago, material);
     var brazo_rotula = new THREE.Mesh(rotula, material);
-    var antebrazo_disco = new THREE.Mesh(disco, material);
+    var antebrazo_disco = new THREE.Mesh(disco, material_pinzas);
     var antebrazo_nervio_1 = new THREE.Mesh(nervio, material);
     var antebrazo_nervio_2 = new THREE.Mesh(nervio, material);
     var antebrazo_nervio_3 = new THREE.Mesh(nervio, material);
     var antebrazo_nervio_4 = new THREE.Mesh(nervio, material);
     var antrebazo_mano = new THREE.Mesh(mano, material);
-    var pinza_izquierda = new THREE.Mesh(mallaPinza, material);
-    var pinza_derecha = new THREE.Mesh(mallaPinza, material);
+    var pinza_izquierda = new THREE.Mesh(mallaPinza, material_pinzas);
+    var pinza_derecha = new THREE.Mesh(mallaPinza, material_pinzas);
 
     /// Objeto contenedor
     robot = new THREE.Object3D();
