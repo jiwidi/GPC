@@ -94,9 +94,9 @@ function loadScene() {
 
     // Transformaciones
     /// Base
-    base.position.y = 0
-    base.position.x = +50
-    base.position.z = +50
+    // base.position.y = 0
+    // base.position.x = +
+    // base.position.z = +50
     /// Brazo eje
     brazo_eje.rotation.x = Math.PI / 2;
     /// Esparrago
