@@ -110,7 +110,7 @@ function loadScene() {
     var disco = new THREE.CylinderGeometry(22, 22, 6, 20);
     var nervio = new THREE.BoxGeometry(4, 80, 4);
     var mano = new THREE.CylinderGeometry(15, 15, 40, 32);
-    var suelo = new THREE.PlaneGeometry(10000, 10000, 10, 10);
+    var suelo = new THREE.PlaneGeometry(1000, 1000, 50, 50)
     var ground = new THREE.Mesh(suelo, material);
 
     ground.rotation.x = -Math.PI / 2;
