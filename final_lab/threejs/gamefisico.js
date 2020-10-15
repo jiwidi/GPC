@@ -48,89 +48,23 @@ function esfera(radio, posicion, material) {
 }
 
 function Plane(material, position) {
-    this.mesh = new THREE.Object3D();
-    this.mesh.name = "airPlane";
-    // Code for geometry cloned from https://github.com/yakudoo/TheAviator
-    // Create the cabin
-    var geomCockpit = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
-    var matCockpit = new THREE.MeshPhongMaterial({
-        color: Colors.red,
-        shading: THREE.FlatShading
+    // this.mesh = new THREE.Object3D();
+    // this.mesh.name = "airPlane";
+    var mat = new THREE.MeshPhongMaterial({
+        color: Colors.blue,
+        // transparent:true,
+        // opacity:.6,
+        shading: THREE.FlatShading,
     });
-    var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
-    cockpit.castShadow = true;
-    cockpit.receiveShadow = true;
-    this.mesh.add(cockpit);
-
-    // Create Engine
-    var geomEngine = new THREE.BoxGeometry(20, 50, 50, 1, 1, 1);
-    var matEngine = new THREE.MeshPhongMaterial({
-        color: Colors.white,
-        shading: THREE.FlatShading
-    });
-    var engine = new THREE.Mesh(geomEngine, matEngine);
-    engine.position.x = 40;
-    engine.castShadow = true;
-    engine.receiveShadow = true;
-    this.mesh.add(engine);
-
-    // Create Tailplane
-
-    var geomTailPlane = new THREE.BoxGeometry(15, 20, 5, 1, 1, 1);
-    var matTailPlane = new THREE.MeshPhongMaterial({
-        color: Colors.red,
-        shading: THREE.FlatShading
-    });
-    var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
-    tailPlane.position.set(-35, 25, 0);
-    tailPlane.castShadow = true;
-    tailPlane.receiveShadow = true;
-    this.mesh.add(tailPlane);
-
-    // Create Wing
-    var geomSideWing = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
-    var matSideWing = new THREE.MeshPhongMaterial({
-        color: Colors.red,
-        shading: THREE.FlatShading
-    });
-    var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
-    sideWing.position.set(0, 0, 0);
-    sideWing.castShadow = true;
-    sideWing.receiveShadow = true;
-    this.mesh.add(sideWing);
-
-    // Propeller
-    var geomPropeller = new THREE.BoxGeometry(20, 10, 10, 1, 1, 1);
-    var matPropeller = new THREE.MeshPhongMaterial({
-        color: Colors.brown,
-        shading: THREE.FlatShading
-    });
-    this.propeller = new THREE.Mesh(geomPropeller, matPropeller);
-    this.propeller.castShadow = true;
-    this.propeller.receiveShadow = true;
-
-    // Blades
-    var geomBlade = new THREE.BoxGeometry(1, 100, 20, 1, 1, 1);
-    var matBlade = new THREE.MeshPhongMaterial({
-        color: Colors.brownDark,
-        shading: THREE.FlatShading
-    });
-
-    var blade = new THREE.Mesh(geomBlade, matBlade);
-    blade.position.set(8, 0, 0);
-    blade.castShadow = true;
-    blade.receiveShadow = true;
-    this.propeller.add(blade);
-    this.propeller.position.set(50, 0, 0);
-    this.mesh.add(this.propeller);
-    this.mesh.scale.set(.25, .25, .25);
+    this.mesh = new THREE.Mesh(new THREE.SphereGeometry(5),
+        mat);
     // Cannon
     var masa = 0;
     this.body = new CANNON.Body({
         mass: masa,
         material: material
     });
-    this.body.addShape(new CANNON.Box(new CANNON.Vec3(50, 50, 50)));
+    this.body.addShape(new CANNON.Sphere(5));
     this.body.position.copy(position);
     this.visual = this.mesh;
     this.visual.position.copy(this.body.position);
@@ -155,6 +89,7 @@ function Sky(material, position) {
         c.mesh.scale.set(s, s, s);
         this.mesh.add(c.mesh);
     }
+    // this.mesh.rotation.x =  * Math.PI / 180
     var masa = 0;
     this.body = new CANNON.Body({
         mass: masa,
@@ -361,15 +296,6 @@ function loadWorld() {
     scene.add(sky.visual);
     objectos.push(sky)
 
-    // Restricciones
-    for (var i = 0; i < objectos.length - 1; i++) {
-        var restriccion = new CANNON.PointToPointConstraint(objectos[i].body,
-            new CANNON.Vec3(0, 1 / 2, 0),
-            objectos[i + 1].body,
-            new CANNON.Vec3(0, -1 / 2, 0));
-        world.addConstraint(restriccion);
-    };
-
     //Giramos el cielo
     var giro = new TWEEN.Tween(sky.visual.rotation).to({
         x: 0,
@@ -448,8 +374,7 @@ function addcubes() {
 function loop() {
     ground.body.position.x += 1;
     ground.visual.position.copy(ground.body.position);
-    // sky.visual.position.x += 1;
-    // addcubes();
+    update();
     requestAnimationFrame(loop);
 }
 
