@@ -186,7 +186,7 @@ function createLights() {
 function initPhysicWorld() {
     // Mundo
     world = new CANNON.World();
-    // world.gravity.set(0, -9.8, 0);
+    world.gravity.set(0, -9.8, 0);
     ///world.broadphase = new CANNON.NaiveBroadphase();
     world.solver.iterations = 10;
 
@@ -205,15 +205,15 @@ function initPhysicWorld() {
     });
     world.addContactMaterial(planeGroundContactMaterial);
 
-    // Suelo
-    var groundShape = new CANNON.Plane();
-    var ground = new CANNON.Body({
-        mass: 0,
-        material: groundMaterial
-    });
-    ground.addShape(groundShape);
-    ground.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    world.addBody(ground);
+    // // Suelo
+    // var groundShape = new CANNON.Plane();
+    // var ground = new CANNON.Body({
+    //     mass: 0,
+    //     material: groundMaterial
+    // });
+    // ground.addShape(groundShape);
+    // ground.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+    // world.addBody(ground);
 }
 
 /**
