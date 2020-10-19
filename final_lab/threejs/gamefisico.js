@@ -56,10 +56,10 @@ function Plane(material, position) {
         // opacity:.6,
         shading: THREE.FlatShading,
     });
-    this.mesh = new THREE.Mesh(new THREE.SphereGeometry(5),
+    this.mesh = new THREE.Mesh(new THREE.SphereGeometry(25),
         mat);
     // Cannon
-    var masa = 0;
+    var masa = 1;
     this.body = new CANNON.Body({
         mass: masa,
         material: material
@@ -105,16 +105,16 @@ function Ground(material, position) {
     var textureLoader = new THREE.TextureLoader();
     var map = textureLoader.load('./textures/grass.jpg');
     // Cannon
-    var masa = 0;
+    var masa = 1;
     this.body = new CANNON.Body({
         mass: masa,
         material: material
     });
-    this.body.addShape(new CANNON.Box(new CANNON.Vec3(1000, 1000, 10)));
+    this.body.addShape(new CANNON.Box(new CANNON.Vec3(100, 100, 10)));
     this.body.position.copy(position);
     // Visuales
     var geom = new THREE.BoxGeometry(1000, 1000, 10, 40, 10);
-    geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+    // geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
     var mat = new THREE.MeshPhongMaterial({
         color: Colors.blue,
         map: map,
@@ -186,7 +186,7 @@ function createLights() {
 function initPhysicWorld() {
     // Mundo
     world = new CANNON.World();
-    world.gravity.set(0, -9.8, 0);
+    world.gravity.set(0, 0, 0);
     ///world.broadphase = new CANNON.NaiveBroadphase();
     world.solver.iterations = 10;
 
@@ -205,15 +205,15 @@ function initPhysicWorld() {
     });
     world.addContactMaterial(planeGroundContactMaterial);
 
-    // // Suelo
-    // var groundShape = new CANNON.Plane();
-    // var ground = new CANNON.Body({
-    //     mass: 0,
-    //     material: groundMaterial
-    // });
-    // ground.addShape(groundShape);
-    // ground.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    // world.addBody(ground);
+    // Suelo
+    var groundShape = new CANNON.Plane();
+    var ground = new CANNON.Body({
+        mass: 0,
+        material: groundMaterial
+    });
+    ground.addShape(groundShape);
+    ground.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+    world.addBody(ground);
 }
 
 /**
@@ -251,8 +251,8 @@ function initVisualWorld() {
         farPlane
     );
     camera.position.x = 0;
-    camera.position.z = 200;
-    camera.position.y = 0;
+    camera.position.z = 500;
+    camera.position.y = 100;
     // Control de camara
     cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
     cameraControls.target.set(0, 0, 0);
@@ -281,17 +281,17 @@ function loadWorld() {
         if (world.materials[i].name === "skyMaterial") skyMaterial = world.materials[i];
     }
     // Creamos el avion
-    airplane = new Plane(planeMaterial, new CANNON.Vec3(0, 0, -200));
+    airplane = new Plane(planeMaterial, new CANNON.Vec3(0, 10, 200));
     world.addBody(airplane.body);
     scene.add(airplane.visual);
     objectos.push(airplane)
     // Creamos el suelo
-    ground = new Ground(groundMaterial, new CANNON.Vec3(0, -50, 0));
+    ground = new Ground(groundMaterial, new CANNON.Vec3(0, 0, 0));
     world.addBody(ground.body);
     scene.add(ground.visual);
     objectos.push(ground)
     // Creamos el cielo
-    sky = new Sky(skyMaterial, new CANNON.Vec3(0, -500, 0));
+    sky = new Sky(skyMaterial, new CANNON.Vec3(0, -500, -0));
     world.addBody(sky.body);
     scene.add(sky.visual);
     objectos.push(sky)
@@ -399,9 +399,9 @@ function init(event) {
             airplane.visual.position.copy(airplane.body.position);
             console.log("w")
         } else if ((event.keyCode == 37 || event.keyCode == 65)) {
-            airplane.body.position.x -= 10;
+            airplane.body.applyImpulse(new CANNON.Vec3(0, -10, 0), airplane.body.position)
             airplane.visual.position.copy(airplane.body.position);
-            camera.position.x -= 10;
+            // camera.position.x -= 10;
             sky.body.position.x -= 10;
             sky.visual.position.copy(sky.body.position); // Luces
             // shadowLight.position.x -= 10;
