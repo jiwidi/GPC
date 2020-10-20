@@ -49,12 +49,13 @@ function pelota(radio, posicion, material) {
 	var map = textureLoader.load('./textures/ball.jpg');
 	this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
-	this.visual = new THREE.Mesh(new THREE.SphereGeometry(radio),
+	this.visual = new THREE.Mesh(new THREE.SphereGeometry(radio, 32, 32),
 		new THREE.MeshBasicMaterial({
 			// wireframe: true,
 			map: map,
 			shading: THREE.FlatShading,
 		}));
+	this.visual.castShadow = true;
 	this.visual.position.copy(this.body.position);
 }
 
@@ -69,7 +70,7 @@ function obstaculo(altura, posicion, material) {
 	this.body.addShape(new CANNON.Box(new CANNON.Vec3(0.8, altura / 2, 0.5)));
 	// this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
-	var geom = new THREE.BoxGeometry(2, altura, 2.5);
+	var geom = new THREE.BoxGeometry(2, altura, 2.5, 10, 10, 10);
 	// geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 	var mat = new THREE.MeshBasicMaterial({
 		side: THREE.DoubleSide,
@@ -77,6 +78,7 @@ function obstaculo(altura, posicion, material) {
 		shading: THREE.FlatShading,
 	});
 	this.visual = new THREE.Mesh(geom, mat);
+	this.visual.castShadow = true;
 	// this.visual.position.copy(this.body.position);
 }
 
@@ -105,16 +107,20 @@ function createLights() {
 
 	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9)
 	shadowLight = new THREE.DirectionalLight(0xffffff, .9);
-	shadowLight.position.set(150, 250, 250);
+	shadowLight.position.set(len_suelo, len_suelo, 50);
 	shadowLight.castShadow = true;
-	shadowLight.shadow.camera.left = -200;
-	shadowLight.shadow.camera.right = 200;
-	shadowLight.shadow.camera.top = 200;
-	shadowLight.shadow.camera.bottom = -200;
+	shadowLight.shadow.camera.left = -400;
+	shadowLight.shadow.camera.right = 400;
+	shadowLight.shadow.camera.top = 400;
+	shadowLight.shadow.camera.bottom = -400;
 	shadowLight.shadow.camera.near = 1;
-	shadowLight.shadow.camera.far = 5000;
-	shadowLight.shadow.mapSize.width = 1048;
-	shadowLight.shadow.mapSize.height = 1048;
+	shadowLight.shadow.camera.far = 1000;
+	shadowLight.shadow.mapSize.width = 2048;
+	shadowLight.shadow.mapSize.height = 2048;
+	shadowLight.shadowMapWidth = 2024; // default is 512
+	shadowLight.shadowMapHeight = 2024;
+	shadowLight.shadowCameraVisible = true;
+	shadowLight.angle = Math.PI / 8.0;
 
 	scene.add(hemisphereLight);
 	scene.add(shadowLight);
@@ -210,6 +216,7 @@ function initVisualWorld() {
 	// renderer.setClearColor(new THREE.Color(0x000000));
 	renderer.setClearColor(new THREE.Color(0xd8d0d1), 1);
 	renderer.shadowMapEnabled = true
+	renderer.shadowMapType = THREE.PCFSoftShadowMap;
 	document.getElementById('container').appendChild(renderer.domElement);
 
 	// Crear el grafo de escena
@@ -239,7 +246,7 @@ function initVisualWorld() {
 	//Carretera
 	var textureLoader = new THREE.TextureLoader();
 	var map = textureLoader.load('./textures/road.jpg');
-	var geometry = new THREE.PlaneGeometry(len_suelo, 2, 32);
+	var geometry = new THREE.PlaneGeometry(len_suelo + 1, 2, 3200);
 	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 	var material = new THREE.MeshPhongMaterial({
 		side: THREE.DoubleSide,
@@ -247,12 +254,13 @@ function initVisualWorld() {
 	});
 	var plane = new THREE.Mesh(geometry, material);
 	plane.position.x = len_suelo / 2 - 2
+	plane.receiveShadow = true;
 	scene.add(plane);
 
 	//Suelo visual
 	var textureLoader = new THREE.TextureLoader();
 	var map = textureLoader.load('./textures/asphalt.jpg');
-	var geometry = new THREE.PlaneGeometry(len_suelo * 2, len_suelo * 2, 32);
+	var geometry = new THREE.PlaneGeometry(len_suelo * 2, len_suelo * 2, 512);
 	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 	var material = new THREE.MeshPhongMaterial({
 		side: THREE.DoubleSide,
@@ -261,6 +269,7 @@ function initVisualWorld() {
 	var plane = new THREE.Mesh(geometry, material);
 	// plane.position.x = len_suelo / 2 - 2
 	plane.position.y -= 0.1
+	plane.receiveShadow = true;
 	scene.add(plane);
 }
 
@@ -275,7 +284,7 @@ function loadWorld() {
 		if (world.materials[i].name === "sphereMaterial") materialEsfera = world.materials[i];
 		if (world.materials[i].name === "obstacleMaterial") materialObstaculo = world.materials[i];
 	}
-	pelota_jugador = new pelota(1 / 2, new CANNON.Vec3(-1, 2, 0), materialEsfera);
+	pelota_jugador = new pelota(1 / 2, new CANNON.Vec3(-1, 3, 0), materialEsfera);
 	world.addBody(pelota_jugador.body);
 	scene.add(pelota_jugador.visual);
 
@@ -373,15 +382,21 @@ function update() {
 	// Actualiza el movimeinto del molinete
 	TWEEN.update();
 
-	//Checkeamos condicion de ganar:
-	// if (pelota_jugador.body.position.x > len_suelo - 3) {
-	// 	console.log("GANASTE");
-	// 	reset();
-	// } else if (pelota_jugador.body.position.y < -2) {
-	// 	console.log("GANASTE");
-	// 	reset();
+	// Checkeamos condicion de ganar:
+	if (pelota_jugador.body.position.x > len_suelo - 3) {
+		console.log("GANASTE");
+		// reset();
+	} else if (pelota_jugador.body.position.y < -2) {
+		console.log("GANASTE");
+		// reset();
 
-	// }
+	} else if (pelota_jugador.body.position.y > 100) {
+		console.log("TOO HIGH BRO DONT CHEAT");
+		pelota_jugador.body.position.y = 1
+		pelota_jugador.body.velocity.y = 0
+		// reset();
+
+	}
 }
 
 /**
