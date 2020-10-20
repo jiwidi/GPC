@@ -221,9 +221,9 @@ function initVisualWorld() {
 	camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 100);
 	camera.position.set(2, 5, 10);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
-	// Control de camara
-	cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-	cameraControls.target.set(0, 0, 0);
+	// // Control de camara
+	// cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+	// cameraControls.target.set(0, 0, 0);
 
 	// STATS --> stats.update() en update()
 	stats = new Stats();
