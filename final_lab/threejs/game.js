@@ -15,6 +15,7 @@ var cameraControls;
 var stats;
 // Mundo fisico
 var world, reloj;
+var premio;
 // Objetos
 const nesferas = 20;
 const nobstacurlos = 50;
@@ -82,25 +83,59 @@ function obstaculo(altura, posicion, material) {
 	// this.visual.position.copy(this.body.position);
 }
 
-function premio(radio, posicion, material) {
-	var masa = 10000;
+//mesh from from https://observablehq.com/@sxywu/three-js-exploration-shapes
+function premio(radio, posicion, materialFisico) {
+	var textureLoader = new THREE.TextureLoader();
+	var map = textureLoader.load('./textures/diamond.jpg');
+	//Physical
 	this.body = new CANNON.Body({
-		mass: masa,
-		material: material
+		mass: 0,
+		material: materialFisico
 	});
 	this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
-	var geom = new THREE.SphereGeometry(radio)
-	// geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
-	var mat = new THREE.MeshPhongMaterial({
-		color: 0x68c3c0,
+	// create just one triangle
+	var vertices = [
+		-1, 1, 1, // 0: left top front
+		-1, -1, 1, // 1: left bottom front
+		1, -1, 1, // 2: right bottom front
+		1, 1, 1, // 3: right top front
+		1, -1, -1, // 4: right bottom back
+		1, 1, -1, // 5: right top back
+		-1, -1, -1, // 6: left bottom back
+		-1, 1, -1, // 7: left top back
+		0, 1, 0, // 8: top middle
+		0, -1, 0, // 9: bottom middle
+	]
+	var faces = [
+		0, 1, 2, // front 1
+		0, 2, 3, // front 2
+		3, 2, 4, // right 1
+		3, 4, 5, // right 2
+		5, 4, 6, // back 1
+		5, 6, 7, // back 2
+		7, 6, 1, // left 1
+		7, 1, 0, // left 2
+		8, 0, 3, // top front
+		8, 3, 5, // top right
+		8, 5, 7, // top back
+		8, 7, 0, // top left
+		9, 2, 1, // bottom front
+		9, 4, 2, // bottom right
+		9, 6, 4, // bottom back
+		9, 1, 6, // bottom left
+	]
+	var geometry = new THREE.PolyhedronGeometry(vertices, faces, 30, 0);
+	var material = new THREE.MeshNormalMaterial({
+		// side: THREE.DoubleSide,
 		// map: map,
-		// transparent:true,
-		// opacity:.6,
-		shading: THREE.FlatShading,
+		// shading: THREE.FlatShading,
 	});
-	this.visual = new THREE.Mesh(geom, mat);
-	this.visual.position.copy(this.body.position);
+	var mesh = new THREE.Mesh(geometry, material);
+	mesh.castShadow = true;
+	// scale the mesh
+	mesh.scale.set(0.03, 0.06, 0.03)
+	this.visual = mesh;
 }
 
 function createLights() {
@@ -288,7 +323,7 @@ function loadWorld() {
 	world.addBody(pelota_jugador.body);
 	scene.add(pelota_jugador.visual);
 
-	for (var i = 4; i < len_suelo; i += 2) {
+	for (var i = 4; i < len_suelo - 5; i += 2) {
 		var r = getRndInteger(0, 2);
 		if (r > 0) {
 			var altura = getRndInteger(1, 8);
@@ -300,8 +335,20 @@ function loadWorld() {
 			// }
 		}
 	};
-
+	reward = new premio(1, new CANNON.Vec3(len_suelo - 3, 5, 0), materialObstaculo);
+	world.addBody(reward.body);
+	scene.add(reward.visual);
 	scene.add(new THREE.AxisHelper(5));
+
+	var giro = new TWEEN.Tween(reward.visual.rotation).to({
+		x: 0,
+		y: 2 * Math.PI,
+		z: 0
+	}, 10000);
+	giro.repeat(Infinity);
+	giro.start();
+
+	//Controller
 	window.addEventListener('keydown', function movekey(event) {
 		if (event.keyCode == 39 || event.keyCode == 68) {
 			if (pelota_jugador.body.velocity.x < 2) {
@@ -362,10 +409,15 @@ function reset() {
 function update() {
 	var segundos = reloj.getDelta(); // tiempo en segundos que ha pasado
 	world.step(segundos); // recalcula el mundo tras ese tiempo
-	if (pelota_jugador) {
-		pelota_jugador.visual.position.copy(pelota_jugador.body.position);
-		pelota_jugador.visual.quaternion.copy(pelota_jugador.body.quaternion);
-	}
+
+	//Actualizamos visual pelota
+	pelota_jugador.visual.position.copy(pelota_jugador.body.position);
+	pelota_jugador.visual.quaternion.copy(pelota_jugador.body.quaternion);
+
+	//Actualizamos visual pelota
+	reward.visual.position.copy(reward.body.position);
+	reward.visual.quaternion.copy(reward.body.quaternion);
+
 
 
 	for (var i = 0; i < obstaculos.length; i++) {
