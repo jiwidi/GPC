@@ -335,7 +335,7 @@ function loadWorld() {
 			// }
 		}
 	};
-	reward = new premio(1, new CANNON.Vec3(len_suelo - 3, 5, 0), materialObstaculo);
+	reward = new premio(1, new CANNON.Vec3(len_suelo - 3, 2, 0), materialObstaculo);
 	world.addBody(reward.body);
 	scene.add(reward.visual);
 	scene.add(new THREE.AxisHelper(5));
