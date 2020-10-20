@@ -52,7 +52,8 @@ function pelota(radio, posicion, material) {
 	this.visual = new THREE.Mesh(new THREE.SphereGeometry(radio),
 		new THREE.MeshBasicMaterial({
 			// wireframe: true,
-			map: map
+			map: map,
+			shading: THREE.FlatShading,
 		}));
 	this.visual.position.copy(this.body.position);
 }
@@ -73,6 +74,7 @@ function obstaculo(altura, posicion, material) {
 	var mat = new THREE.MeshBasicMaterial({
 		side: THREE.DoubleSide,
 		map: map,
+		shading: THREE.FlatShading,
 	});
 	this.visual = new THREE.Mesh(geom, mat);
 	// this.visual.position.copy(this.body.position);
@@ -221,9 +223,6 @@ function initVisualWorld() {
 	camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 100);
 	camera.position.set(2, 5, 10);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
-	// // Control de camara
-	// cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-	// cameraControls.target.set(0, 0, 0);
 
 	// STATS --> stats.update() en update()
 	stats = new Stats();
@@ -275,19 +274,6 @@ function loadWorld() {
 		}
 	};
 
-	// var prem = new premio(5, new CANNON.Vec3(getRndInteger(-19, 19), getRndInteger(1, 10), getRndInteger(-19, 19)), materialObstaculo);
-	// world.addBody(prem.body);
-	// scene.add(prem.visual);
-
-
-
-	//
-	// Coordinates.drawGrid({
-	// 	size: len_suelo,
-	// 	scale: 1,
-	// 	orientation: "x"
-	// });
-
 	scene.add(new THREE.AxisHelper(5));
 	window.addEventListener('keydown', function movekey(event) {
 		if (event.keyCode == 39 || event.keyCode == 68) {
@@ -333,6 +319,7 @@ function reset() {
 
 	for (var i = 0; i < obstaculos.length; i++) {
 		world.removeBody(obstaculos[i].body)
+		scene.rem
 	};
 	// initVisualWorld();
 	loadWorld();
