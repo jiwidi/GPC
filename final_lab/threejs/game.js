@@ -17,10 +17,10 @@ var stats;
 var world, reloj;
 // Objetos
 const nesferas = 20;
-const nobstacurlos = 100;
+const nobstacurlos = 50;
 var esferas = [];
 var obstaculos = [];
-var len_suelo = 20
+var len_suelo = 80
 initPhysicWorld();
 initVisualWorld();
 loadWorld();
@@ -39,22 +39,25 @@ function getRndInteger(min, max) {
 /**
  * Construye una bola con cuerpo y vista
  */
-function esfera(radio, posicion, material) {
+function pelota(radio, posicion, material) {
 	var masa = 100;
 	this.body = new CANNON.Body({
 		mass: masa,
 		material: material
 	});
+	var textureLoader = new THREE.TextureLoader();
+	var map = textureLoader.load('./textures/ball.jpg');
 	this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
 	this.visual = new THREE.Mesh(new THREE.SphereGeometry(radio),
 		new THREE.MeshBasicMaterial({
-			wireframe: true
+			// wireframe: true,
+			map: map
 		}));
 	this.visual.position.copy(this.body.position);
 }
 
-function obstaculo(radio, posicion, material) {
+function obstaculo(altura, posicion, material) {
 	var masa = 100000;
 	var textureLoader = new THREE.TextureLoader();
 	var map = textureLoader.load('./textures/brick.png');
@@ -62,27 +65,21 @@ function obstaculo(radio, posicion, material) {
 		mass: masa,
 		material: material
 	});
-	x = getRndInteger(1, 4);
-	// box = (getRndInteger(1, 4), getRndInteger(1, 5), getRndInteger(1, 5))
-	radio = getRndInteger(1, 5);
-	this.body.addShape(new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)));
+	this.body.addShape(new CANNON.Box(new CANNON.Vec3(0.8, altura / 2, 0.5)));
 	// this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
-	geom = new THREE.BoxGeometry((1, 1, 1));
-	// geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
-	var mat = new THREE.MeshPhongMaterial({
-		color: 0x689999,
+	var geom = new THREE.BoxGeometry(2, altura, 2.5);
+	// geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+	var mat = new THREE.MeshBasicMaterial({
+		side: THREE.DoubleSide,
 		map: map,
-		// transparent:true,
-		// opacity:.6,
-		shading: THREE.FlatShading,
 	});
 	this.visual = new THREE.Mesh(geom, mat);
-	this.visual.position.copy(this.body.position);
+	// this.visual.position.copy(this.body.position);
 }
 
 function premio(radio, posicion, material) {
-	var masa = 100;
+	var masa = 10000;
 	this.body = new CANNON.Body({
 		mass: masa,
 		material: material
@@ -106,20 +103,21 @@ function createLights() {
 
 	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9)
 	shadowLight = new THREE.DirectionalLight(0xffffff, .9);
-	shadowLight.position.set(150, 350, 350);
+	shadowLight.position.set(150, 250, 250);
 	shadowLight.castShadow = true;
-	shadowLight.shadow.camera.left = -400;
-	shadowLight.shadow.camera.right = 400;
-	shadowLight.shadow.camera.top = 400;
-	shadowLight.shadow.camera.bottom = -400;
+	shadowLight.shadow.camera.left = -200;
+	shadowLight.shadow.camera.right = 200;
+	shadowLight.shadow.camera.top = 200;
+	shadowLight.shadow.camera.bottom = -200;
 	shadowLight.shadow.camera.near = 1;
-	shadowLight.shadow.camera.far = 1000;
-	shadowLight.shadow.mapSize.width = 2048;
-	shadowLight.shadow.mapSize.height = 2048;
+	shadowLight.shadow.camera.far = 5000;
+	shadowLight.shadow.mapSize.width = 1048;
+	shadowLight.shadow.mapSize.height = 1048;
 
 	scene.add(hemisphereLight);
 	scene.add(shadowLight);
 }
+
 /**
  * Inicializa el mundo fisico con un
  * suelo y cuatro paredes de altura infinita
@@ -172,7 +170,7 @@ function initPhysicWorld() {
 		material: groundMaterial
 	});
 	backWall.addShape(new CANNON.Plane());
-	backWall.position.z = -len_suelo / 2;
+	backWall.position.z = -1;
 	world.addBody(backWall);
 	var frontWall = new CANNON.Body({
 		mass: 0,
@@ -180,14 +178,14 @@ function initPhysicWorld() {
 	});
 	frontWall.addShape(new CANNON.Plane());
 	frontWall.quaternion.setFromEuler(0, Math.PI, 0, 'XYZ');
-	frontWall.position.z = len_suelo / 2;
+	frontWall.position.z = 1;
 	world.addBody(frontWall);
 	var leftWall = new CANNON.Body({
 		mass: 0,
 		material: groundMaterial
 	});
 	leftWall.addShape(new CANNON.Plane());
-	leftWall.position.x = -len_suelo / 2;
+	leftWall.position.x = -2;
 	leftWall.quaternion.setFromEuler(0, Math.PI / 2, 0, 'XYZ');
 	world.addBody(leftWall);
 	var rightWall = new CANNON.Body({
@@ -195,7 +193,7 @@ function initPhysicWorld() {
 		material: groundMaterial
 	});
 	rightWall.addShape(new CANNON.Plane());
-	rightWall.position.x = len_suelo / 2;
+	rightWall.position.x = len_suelo - 2;
 	rightWall.quaternion.setFromEuler(0, -Math.PI / 2, 0, 'XYZ');
 	world.addBody(rightWall);
 }
@@ -207,7 +205,8 @@ function initVisualWorld() {
 	// Inicializar el motor de render
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.setClearColor(new THREE.Color(0x000000));
+	// renderer.setClearColor(new THREE.Color(0x000000));
+	renderer.setClearColor(new THREE.Color(0xd8d0d1), 1);
 	document.getElementById('container').appendChild(renderer.domElement);
 
 	// Crear el grafo de escena
@@ -236,17 +235,15 @@ function initVisualWorld() {
 
 	//Suelo visual
 	var textureLoader = new THREE.TextureLoader();
-	var map = textureLoader.load('./textures/grass.jpg');
-	var geometry = new THREE.PlaneGeometry(len_suelo, len_suelo, 32);
+	var map = textureLoader.load('./textures/road.jpg');
+	var geometry = new THREE.PlaneGeometry(len_suelo, 2, 32);
 	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
-	var material = new THREE.MeshBasicMaterial({
-		color: 0xffff00,
+	var material = new THREE.MeshPhongMaterial({
 		side: THREE.DoubleSide,
 		map: map
 	});
 	var plane = new THREE.Mesh(geometry, material);
-	plane.position.x = 2
-	// plane.rotate.z
+	plane.position.x = len_suelo / 2 - 2
 	scene.add(plane);
 }
 
@@ -261,20 +258,26 @@ function loadWorld() {
 		if (world.materials[i].name === "sphereMaterial") materialEsfera = world.materials[i];
 		if (world.materials[i].name === "obstacleMaterial") materialObstaculo = world.materials[i];
 	}
-	var e = new esfera(1 / 2, new CANNON.Vec3(-1, i + 1, 0), materialEsfera);
-	world.addBody(e.body);
-	scene.add(e.visual);
-	esferas.push(e)
+	pelota_jugador = new pelota(1 / 2, new CANNON.Vec3(-1, i + 1, 0), materialEsfera);
+	world.addBody(pelota_jugador.body);
+	scene.add(pelota_jugador.visual);
 
-	for (var i = 0; i < nobstacurlos; i++) {
-		var obs = new obstaculo(1 / 2, new CANNON.Vec3(getRndInteger(-19, 19), getRndInteger(1, 10), getRndInteger(-19, 19)), materialObstaculo);
-		world.addBody(obs.body);
-		scene.add(obs.visual);
-		obstaculos.push(obs);
+	for (var i = 4; i < len_suelo; i++) {
+		var r = getRndInteger(0, 2);
+		if (r > 0) {
+			var altura = getRndInteger(1, 8);
+			// for (var j = 0; j < n_obs; j++) {
+			var obs = new obstaculo(altura, new CANNON.Vec3(i, 0, -0.5), materialObstaculo);
+			world.addBody(obs.body);
+			scene.add(obs.visual);
+			obstaculos.push(obs);
+			// }
+		}
 	};
-	var prem = new premio(5, new CANNON.Vec3(getRndInteger(-19, 19), getRndInteger(1, 10), getRndInteger(-19, 19)), materialObstaculo);
-	world.addBody(prem.body);
-	scene.add(prem.visual);
+
+	// var prem = new premio(5, new CANNON.Vec3(getRndInteger(-19, 19), getRndInteger(1, 10), getRndInteger(-19, 19)), materialObstaculo);
+	// world.addBody(prem.body);
+	// scene.add(prem.visual);
 
 
 
@@ -288,28 +291,28 @@ function loadWorld() {
 	scene.add(new THREE.AxisHelper(5));
 	window.addEventListener('keydown', function movekey(event) {
 		if (event.keyCode == 39 || event.keyCode == 68) {
-			esferas[0].body.applyImpulse(new CANNON.Vec3(+300, 0, 0), esferas[0].body.position)
-			esferas[0].visual.position.copy(esferas[0].body.position);
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(+300, 0, 0), pelota_jugador.body.position)
+			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			// Luces
 			// shadowLight.position.x += 10;
 		} else if ((event.keyCode == 38 || event.keyCode == 87)) {
-			esferas[0].body.applyImpulse(new CANNON.Vec3(0, 0, -300), esferas[0].body.position)
-			esferas[0].visual.position.copy(esferas[0].body.position);
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 0, -100), pelota_jugador.body.position)
+			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			console.log("w")
 		} else if ((event.keyCode == 37 || event.keyCode == 65)) {
-			esferas[0].body.applyImpulse(new CANNON.Vec3(-300, 0, 0), esferas[0].body.position)
-			esferas[0].visual.position.copy(esferas[0].body.position);
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(-300, 0, 0), pelota_jugador.body.position)
+			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			// shadowLight.position.x -= 10;
 			console.log("a")
 
 		} else if ((event.keyCode == 40 || event.keyCode == 83)) {
-			esferas[0].body.applyImpulse(new CANNON.Vec3(0, 0, 300), esferas[0].body.position)
-			esferas[0].visual.position.copy(esferas[0].body.position);
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 0, 100), pelota_jugador.body.position)
+			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			console.log("s")
 		} else if ((event.keyCode == 32)) {
-			if (esferas[0].body.position.y < 1) {
-				esferas[0].body.applyImpulse(new CANNON.Vec3(0, 1000, 0), esferas[0].body.position)
-				esferas[0].visual.position.copy(esferas[0].body.position);
+			if (pelota_jugador.body.position.y < 7) {
+				pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 400, 0), pelota_jugador.body.position)
+				pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 				console.log("space")
 			}
 		}
@@ -324,6 +327,11 @@ function updateAspectRatio() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 }
+//Resets the game
+function reset() {
+	obstaculos = [];
+	loadWorld();
+}
 
 /**
  * Actualizacion segun pasa el tiempo
@@ -331,25 +339,32 @@ function updateAspectRatio() {
 function update() {
 	var segundos = reloj.getDelta(); // tiempo en segundos que ha pasado
 	world.step(segundos); // recalcula el mundo tras ese tiempo
+	if (pelota_jugador) {
+		pelota_jugador.visual.position.copy(pelota_jugador.body.position);
+		pelota_jugador.visual.quaternion.copy(pelota_jugador.body.quaternion);
+	}
 
-	for (var i = 0; i < esferas.length; i++) {
-		esferas[i].visual.position.copy(esferas[i].body.position);
-		esferas[i].visual.quaternion.copy(esferas[i].body.quaternion);
-	};
 
 	for (var i = 0; i < obstaculos.length; i++) {
 		obstaculos[i].visual.position.copy(obstaculos[i].body.position);
 		obstaculos[i].visual.quaternion.copy(obstaculos[i].body.quaternion);
 	};
-	camera.position.x = esferas[0].body.position.x
-	camera.position.y = esferas[0].body.position.y + 10
-	camera.position.z = esferas[0].body.position.z + 10
+	camera.position.x = pelota_jugador.body.position.x
+	camera.position.y = pelota_jugador.body.position.y + 10
+	camera.position.z = pelota_jugador.body.position.z + 10
 
 	// Actualiza el monitor
 	stats.update();
 
 	// Actualiza el movimeinto del molinete
 	TWEEN.update();
+
+	//Checkeamos condicion de ganar:
+	if (pelota_jugador.body.position.x > len_suelo - 3) {
+		console.log("GANASTE");
+		reset();
+
+	}
 }
 
 /**
