@@ -296,7 +296,7 @@ function loadWorld() {
 			// Luces
 			// shadowLight.position.x += 10;
 		} else if ((event.keyCode == 38 || event.keyCode == 87)) {
-			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 0, -100), pelota_jugador.body.position)
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 0, -300), pelota_jugador.body.position)
 			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			console.log("w")
 		} else if ((event.keyCode == 37 || event.keyCode == 65)) {
@@ -306,7 +306,7 @@ function loadWorld() {
 			console.log("a")
 
 		} else if ((event.keyCode == 40 || event.keyCode == 83)) {
-			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 0, 100), pelota_jugador.body.position)
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 0, 300), pelota_jugador.body.position)
 			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			console.log("s")
 		} else if ((event.keyCode == 32)) {
@@ -330,6 +330,11 @@ function updateAspectRatio() {
 //Resets the game
 function reset() {
 	obstaculos = [];
+
+	for (var i = 0; i < obstaculos.length; i++) {
+		world.removeBody(obstaculos[i].body)
+	};
+	// initVisualWorld();
 	loadWorld();
 }
 
@@ -361,6 +366,9 @@ function update() {
 
 	//Checkeamos condicion de ganar:
 	if (pelota_jugador.body.position.x > len_suelo - 3) {
+		console.log("GANASTE");
+		reset();
+	} else if (pelota_jugador.body.position.y < -2) {
 		console.log("GANASTE");
 		reset();
 
