@@ -215,6 +215,9 @@ function initVisualWorld() {
 	// Crear el grafo de escena
 	scene = new THREE.Scene();
 
+	var texture = new THREE.TextureLoader().load("textures/sky.jpg");
+	scene.background = texture;
+
 	// Reloj
 	reloj = new THREE.Clock();
 	reloj.start();
@@ -222,7 +225,7 @@ function initVisualWorld() {
 	// Crear y situar la camara
 	var aspectRatio = window.innerWidth / window.innerHeight;
 	camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 100);
-	camera.position.set(2, 5, 10);
+	camera.position.set(0, 5, 7);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 	// STATS --> stats.update() en update()
@@ -233,7 +236,7 @@ function initVisualWorld() {
 	// Callbacks
 	window.addEventListener('resize', updateAspectRatio);
 
-	//Suelo visual
+	//Carretera
 	var textureLoader = new THREE.TextureLoader();
 	var map = textureLoader.load('./textures/road.jpg');
 	var geometry = new THREE.PlaneGeometry(len_suelo, 2, 32);
@@ -244,6 +247,20 @@ function initVisualWorld() {
 	});
 	var plane = new THREE.Mesh(geometry, material);
 	plane.position.x = len_suelo / 2 - 2
+	scene.add(plane);
+
+	//Suelo visual
+	var textureLoader = new THREE.TextureLoader();
+	var map = textureLoader.load('./textures/asphalt.jpg');
+	var geometry = new THREE.PlaneGeometry(len_suelo * 2, len_suelo * 2, 32);
+	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+	var material = new THREE.MeshPhongMaterial({
+		side: THREE.DoubleSide,
+		map: map
+	});
+	var plane = new THREE.Mesh(geometry, material);
+	// plane.position.x = len_suelo / 2 - 2
+	plane.position.y -= 0.1
 	scene.add(plane);
 }
 
@@ -258,11 +275,11 @@ function loadWorld() {
 		if (world.materials[i].name === "sphereMaterial") materialEsfera = world.materials[i];
 		if (world.materials[i].name === "obstacleMaterial") materialObstaculo = world.materials[i];
 	}
-	pelota_jugador = new pelota(1 / 2, new CANNON.Vec3(-1, i + 1, 0), materialEsfera);
+	pelota_jugador = new pelota(1 / 2, new CANNON.Vec3(-1, 2, 0), materialEsfera);
 	world.addBody(pelota_jugador.body);
 	scene.add(pelota_jugador.visual);
 
-	for (var i = 4; i < len_suelo; i++) {
+	for (var i = 4; i < len_suelo; i += 2) {
 		var r = getRndInteger(0, 2);
 		if (r > 0) {
 			var altura = getRndInteger(1, 8);
@@ -357,14 +374,14 @@ function update() {
 	TWEEN.update();
 
 	//Checkeamos condicion de ganar:
-	if (pelota_jugador.body.position.x > len_suelo - 3) {
-		console.log("GANASTE");
-		reset();
-	} else if (pelota_jugador.body.position.y < -2) {
-		console.log("GANASTE");
-		reset();
+	// if (pelota_jugador.body.position.x > len_suelo - 3) {
+	// 	console.log("GANASTE");
+	// 	reset();
+	// } else if (pelota_jugador.body.position.y < -2) {
+	// 	console.log("GANASTE");
+	// 	reset();
 
-	}
+	// }
 }
 
 /**
