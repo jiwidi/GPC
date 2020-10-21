@@ -68,10 +68,10 @@ function obstaculo(altura, posicion, material) {
 		mass: masa,
 		material: material
 	});
-	this.body.addShape(new CANNON.Box(new CANNON.Vec3(0.8, altura / 2, 0.5)));
+	this.body.addShape(new CANNON.Box(new CANNON.Vec3(1, altura / 2, 1)));
 	// this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
-	var geom = new THREE.BoxGeometry(2, altura, 2.5, 10, 10, 10);
+	var geom = new THREE.BoxGeometry(2, altura, 2, 10, 10, 10);
 	// geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 	var mat = new THREE.MeshBasicMaterial({
 		side: THREE.DoubleSide,
@@ -306,6 +306,28 @@ function initVisualWorld() {
 	plane.position.y -= 0.1
 	plane.receiveShadow = true;
 	scene.add(plane);
+
+	// Habitacion
+	var path = "textures/"
+	var paredes = [path + 'pond/posx.jpg', path + 'pond/negx.jpg',
+		path + 'pond/posy.jpg', path + 'pond/negy.jpg',
+		path + 'pond/posz.jpg', path + 'pond/negz.jpg'
+	];
+	var mapaEntorno = new THREE.CubeTextureLoader().load(paredes);
+
+	var shader = THREE.ShaderLib.cube;
+	shader.uniforms.tCube.value = mapaEntorno;
+
+	var matparedes = new THREE.ShaderMaterial({
+		fragmentShader: shader.fragmentShader,
+		vertexShader: shader.vertexShader,
+		uniforms: shader.uniforms,
+		dephtWrite: false,
+		side: THREE.BackSide
+	});
+
+	var habitacion = new THREE.Mesh(new THREE.CubeGeometry(len_suelo * 2, len_suelo * 2, len_suelo * 2), matparedes);
+	scene.add(habitacion);
 }
 
 /**
