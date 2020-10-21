@@ -395,10 +395,12 @@ function loadWorld() {
 			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			console.log("s")
 		} else if ((event.keyCode == 32)) {
-			pelota_jugador.body.velocity.y = 0
-			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 1400, 0), pelota_jugador.body.position)
-			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
-			console.log("space")
+			if (pelota_jugador.body.position.y < 7) {
+				pelota_jugador.body.velocity.y = 0
+				pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 1400, 0), pelota_jugador.body.position)
+				pelota_jugador.visual.position.copy(pelota_jugador.body.position);
+				console.log("space")
+			}
 
 		}
 	}, false);
