@@ -351,10 +351,10 @@ function loadWorld() {
 	//Controller
 	window.addEventListener('keydown', function movekey(event) {
 		if (event.keyCode == 39 || event.keyCode == 68) {
-			if (pelota_jugador.body.velocity.x < 2) {
-				pelota_jugador.body.applyImpulse(new CANNON.Vec3(+800, 0, 0), pelota_jugador.body.position)
-				pelota_jugador.visual.position.copy(pelota_jugador.body.position);
-			}
+			pelota_jugador.body.velocity.x = 0;
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(+800, 0, 0), pelota_jugador.body.position)
+			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
+
 			// Luces
 			// shadowLight.position.x += 10;
 		} else if ((event.keyCode == 38 || event.keyCode == 87)) {
@@ -362,23 +362,22 @@ function loadWorld() {
 			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			console.log("w")
 		} else if ((event.keyCode == 37 || event.keyCode == 65)) {
-			if (pelota_jugador.body.velocity.x > -2) {
-				pelota_jugador.body.applyImpulse(new CANNON.Vec3(-800, 0, 0), pelota_jugador.body.position)
-				pelota_jugador.visual.position.copy(pelota_jugador.body.position);
-				// shadowLight.position.x -= 10;
-				console.log("a")
-			}
+			pelota_jugador.body.velocity.x = 0;
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(-800, 0, 0), pelota_jugador.body.position)
+			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
+			// shadowLight.position.x -= 10;
+			console.log("a")
 
 		} else if ((event.keyCode == 40 || event.keyCode == 83)) {
 			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 0, 300), pelota_jugador.body.position)
 			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
 			console.log("s")
 		} else if ((event.keyCode == 32)) {
-			if (pelota_jugador.body.velocity.y < 2 & pelota_jugador.body.velocity.y > -2) {
-				pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 1400, 0), pelota_jugador.body.position)
-				pelota_jugador.visual.position.copy(pelota_jugador.body.position);
-				console.log("space")
-			}
+			pelota_jugador.body.velocity.y = 0
+			pelota_jugador.body.applyImpulse(new CANNON.Vec3(0, 1400, 0), pelota_jugador.body.position)
+			pelota_jugador.visual.position.copy(pelota_jugador.body.position);
+			console.log("space")
+
 		}
 	}, false);
 }
