@@ -150,7 +150,7 @@ function loadScene() {
         map: texturaRobot
     });
     var matCilindro = new THREE.MeshPhongMaterial({
-        color: 'red',
+        // color: 'red',
         specular: 0x99BBFF,
         shininess: 50,
         wireframe: false,
@@ -293,8 +293,8 @@ function loadScene() {
     antebrazo_mano.position.y = +40
     // /// Pinzas
     // pinza_derecha.rotateY(Math.PI / 2)
-    pinza_izquierda.position.set(0, -10, 0)
-    pinza_derecha.position.set(0, 30, 0)
+    pinza_izquierda.position.set(0, -12, 0)
+    pinza_derecha.position.set(0, 32, 0)
 
 
     // Organizacion de la escena
@@ -362,8 +362,8 @@ function update() {
     antebrazo.rotation.y = effectControl.giroAntebrazoZ * Math.PI / 180
     antebrazo_disco.rotation.z = effectControl.giroAntebrazoY * Math.PI / 180
     antebrazo_mano.rotation.y = effectControl.giroPinzaZ * Math.PI / 180
-    pinza_izquierda.position.y = 5 - effectControl.aperturaPinza
-    pinza_derecha.position.y = 15 + effectControl.aperturaPinza
+    pinza_izquierda.position.y = 3 - effectControl.aperturaPinza
+    pinza_derecha.position.y = 18 + effectControl.aperturaPinza
 }
 
 function render() {

@@ -76,19 +76,16 @@ function init() {
 
     window.addEventListener('keydown', function movekey(event) {
 
-        if ( event.keyCode == 39 || event.keyCode==68) {
-            robot.position.x+=10;
+        if (event.keyCode == 39 || event.keyCode == 68) {
+            robot.position.x += 10;
+        } else if ((event.keyCode == 38 || event.keyCode == 87)) {
+            robot.position.z -= 10;
+        } else if ((event.keyCode == 37 || event.keyCode == 65)) {
+            robot.position.x -= 10;
+        } else if ((event.keyCode == 40 || event.keyCode == 83)) {
+            robot.position.z += 10;
         }
-        else if ( (event.keyCode == 38 || event.keyCode==87)) {
-          robot.position.z-=10;
-        }
-        else if ( (event.keyCode == 37 || event.keyCode==65)) {
-          robot.position.x-=10;
-        }
-        else if ((event.keyCode == 40 || event.keyCode==83)) {
-          robot.position.z+=10;
-        }
-      }, false);
+    }, false);
 }
 
 
@@ -153,7 +150,7 @@ function loadScene() {
         new THREE.Face3(4, 2, 6),
         new THREE.Face3(4, 0, 2),
         new THREE.Face3(2, 7, 6),
-    new THREE.Face3(2, 3, 7),
+        new THREE.Face3(2, 3, 7),
         new THREE.Face3(4, 1, 0),
         new THREE.Face3(4, 5, 1),
         new THREE.Face3(1, 10, 3),
@@ -265,8 +262,8 @@ function update() {
     antebrazo.rotation.y = effectControl.giroAntebrazoZ * Math.PI / 180
     antebrazo_disco.rotation.z = effectControl.giroAntebrazoY * Math.PI / 180
     antebrazo_mano.rotation.y = effectControl.giroPinzaZ * Math.PI / 180
-    pinza_izquierda.position.y = 5 - effectControl.aperturaPinza
-    pinza_derecha.position.y = 15 + effectControl.aperturaPinza
+    pinza_izquierda.position.y = 3 - effectControl.aperturaPinza
+    pinza_derecha.position.y = 18 + effectControl.aperturaPinza
 }
 
 function render() {
