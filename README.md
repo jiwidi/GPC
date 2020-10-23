@@ -8,5 +8,7 @@
 
 [lab4](https://jiwidi.github.io/GPC/lab4/practica4.html)
 
+[lab4](https://jiwidi.github.io/GPC/lab5/practica5.html)
+
 [final_lab](https://jiwidi.github.io/GPC/final_lab/final_lab.html)
 

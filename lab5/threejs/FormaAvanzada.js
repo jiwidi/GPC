@@ -100,8 +100,8 @@ function createLights() {
     puntual.position.y = 300;
     scene.add(puntual);
 
-    var focal = new THREE.SpotLight('white', 0.5);
-    focal.position.set(300, 600, -800);
+    var focal = new THREE.SpotLight('white', 0.9);
+    focal.position.set(300, 600, -0);
     focal.target.position.set(0, 0, 0);
     focal.angle = Math.PI / 7;
     focal.penumbra = 0.2;

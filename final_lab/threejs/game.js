@@ -328,6 +328,45 @@ function initVisualWorld() {
 
 	var habitacion = new THREE.Mesh(new THREE.CubeGeometry(len_suelo * 2, len_suelo * 2, len_suelo * 2), matparedes);
 	scene.add(habitacion);
+
+	//Texto
+	var loader = new THREE.FontLoader();
+	loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+		var textGeo = new THREE.TextGeometry("Find the diamond at the \n end of the road", {
+			font: font,
+			size: 2,
+			height: 0.5,
+			// curveSegments: 12,
+			// bevelThickness: 2,
+			// bevelSize: 5,
+			// bevelEnabled: true
+
+		});
+		var textMaterial = new THREE.MeshPhongMaterial({
+			color: 0xff0000
+		});
+		var mesh = new THREE.Mesh(textGeo, textMaterial);
+		mesh.position.set(-6, 8, -15);
+		mesh.castShadow = true;
+		scene.add(mesh);
+	});
+	loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+		var textGeo = new THREE.TextGeometry("Move with WASD", {
+			font: font,
+			size: 2,
+			height: 0.5,
+			// curveSegments: 12,
+			// bevelThickness: 2,
+			// bevelSize: 5,
+			// bevelEnabled: true
+
+		});
+		var textMaterial = new THREE.MeshNormalMaterial();
+		var mesh = new THREE.Mesh(textGeo, textMaterial);
+		mesh.position.set(-6, 2, -15);
+		mesh.castShadow = true;
+		scene.add(mesh);
+	});
 }
 
 /**
