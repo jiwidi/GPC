@@ -510,7 +510,7 @@ function update() {
 	TWEEN.update();
 
 	// Checkeamos condicion de ganar:
-	if (pelota_jugador.body.position.x > len_suelo - 3 & pelota_jugador.body.position.y < 5) {
+	if (pelota_jugador.body.position.x > len_suelo - 4 & pelota_jugador.body.position.y < 5) {
 
 		pelota_jugador.body.position.y = 1
 		pelota_jugador.body.position.x = 1
