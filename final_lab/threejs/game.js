@@ -61,7 +61,9 @@ function pelota(radio, posicion, material) {
 	this.visual.castShadow = true;
 	this.visual.position.copy(this.body.position);
 }
-
+/**
+ * Construye un obstaculo con cuerpo y vista
+ */
 function obstaculo(altura, posicion, material) {
 	var masa = 100000;
 	var textureLoader = new THREE.TextureLoader();
@@ -71,7 +73,6 @@ function obstaculo(altura, posicion, material) {
 		material: material
 	});
 	this.body.addShape(new CANNON.Box(new CANNON.Vec3(1, altura / 2, 1)));
-	// this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
 	var geom = new THREE.BoxGeometry(2, altura, 2, 10, 10, 10);
 	var mat = new THREE.MeshBasicMaterial({
@@ -81,10 +82,10 @@ function obstaculo(altura, posicion, material) {
 	});
 	this.visual = new THREE.Mesh(geom, mat);
 	this.visual.castShadow = true;
-	// this.visual.position.copy(this.body.position);
 }
-
-//mesh from from https://observablehq.com/@sxywu/three-js-exploration-shapes
+/**
+ * Construye un diamante con cuerpo y vista, geometria de https://observablehq.com/@sxywu/three-js-exploration-shapes
+ */
 function premio(radio, posicion, materialFisico) {
 	var textureLoader = new THREE.TextureLoader();
 	var map = textureLoader.load('./textures/diamond.jpg');
@@ -138,7 +139,9 @@ function premio(radio, posicion, materialFisico) {
 	mesh.scale.set(0.03, 0.06, 0.03)
 	this.visual = mesh;
 }
-
+/**
+ * Crea las luces
+ */
 function createLights() {
 
 	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9)
@@ -243,7 +246,7 @@ function initPhysicWorld() {
 }
 
 /**
- * Inicializa la escena visual
+ * Inicializa la escena visual, crea la habitacion, carretera y texto de instrucciones
  */
 function initVisualWorld() {
 	// Inicializar el motor de render
@@ -303,7 +306,6 @@ function initVisualWorld() {
 		map: map
 	});
 	var plane = new THREE.Mesh(geometry, material);
-	// plane.position.x = len_suelo / 2 - 2
 	plane.position.y -= 0.1
 	plane.receiveShadow = true;
 	scene.add(plane);
@@ -384,7 +386,7 @@ function initVisualWorld() {
 }
 
 /**
- * Carga los objetos es el mundo físico y visual
+ * Carga los objetos(pelota, obstaculos, diamante) es el mundo físico y visual
  */
 function loadWorld() {
 	// Genera las esferas
@@ -533,16 +535,6 @@ function update() {
 			scene.add(contador);
 		});
 		// reset();
-	} else if (pelota_jugador.body.position.y < -2) {
-		console.log("GANASTE");
-		// reset();
-
-	} else if (pelota_jugador.body.position.y > 20) {
-		console.log("TOO HIGH BRO DONT CHEAT");
-		pelota_jugador.body.position.y = 1
-		pelota_jugador.body.velocity.y = 0
-		// reset();
-
 	}
 }
 
