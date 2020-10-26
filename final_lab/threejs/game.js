@@ -27,6 +27,8 @@ initVisualWorld();
 loadWorld();
 render();
 createLights();
+var contador;
+var puntos = 0;
 
 
 function getRndInteger(min, max) {
@@ -72,7 +74,6 @@ function obstaculo(altura, posicion, material) {
 	// this.body.addShape(new CANNON.Sphere(radio));
 	this.body.position.copy(posicion);
 	var geom = new THREE.BoxGeometry(2, altura, 2, 10, 10, 10);
-	// geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 	var mat = new THREE.MeshBasicMaterial({
 		side: THREE.DoubleSide,
 		map: map,
@@ -367,6 +368,19 @@ function initVisualWorld() {
 		mesh.castShadow = true;
 		scene.add(mesh);
 	});
+	loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+		var textGeo = new THREE.TextGeometry("Points: " + puntos, {
+			font: font,
+			size: 2,
+			height: 0.5,
+		});
+		var textMaterial = new THREE.MeshNormalMaterial();
+		contador = new THREE.Mesh(textGeo, textMaterial);
+		contador.name = "puntos"
+		contador.position.set(20, 2, -15);
+		contador.castShadow = true;
+		scene.add(contador);
+	});
 }
 
 /**
@@ -461,7 +475,6 @@ function reset() {
 		world.removeBody(obstaculos[i].body)
 		scene.rem
 	};
-	// initVisualWorld();
 	loadWorld();
 }
 
@@ -497,14 +510,34 @@ function update() {
 	TWEEN.update();
 
 	// Checkeamos condicion de ganar:
-	if (pelota_jugador.body.position.x > len_suelo - 3) {
-		console.log("GANASTE");
+	if (pelota_jugador.body.position.x > len_suelo - 3 & pelota_jugador.body.position.y < 5) {
+
+		pelota_jugador.body.position.y = 1
+		pelota_jugador.body.position.x = 1
+		pelota_jugador.body.velocity.y = 0
+		puntos += 1
+		var selectedObject = scene.getObjectByName(contador.name);
+		scene.remove(selectedObject);
+		var loader = new THREE.FontLoader();
+		loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+			var textGeo = new THREE.TextGeometry("Points: " + puntos, {
+				font: font,
+				size: 2,
+				height: 0.5,
+
+			});
+			var textMaterial = new THREE.MeshNormalMaterial();
+			contador = new THREE.Mesh(textGeo, textMaterial);
+			contador.position.set(20, 2, -15);
+			contador.castShadow = true;
+			scene.add(contador);
+		});
 		// reset();
 	} else if (pelota_jugador.body.position.y < -2) {
 		console.log("GANASTE");
 		// reset();
 
-	} else if (pelota_jugador.body.position.y > 100) {
+	} else if (pelota_jugador.body.position.y > 20) {
 		console.log("TOO HIGH BRO DONT CHEAT");
 		pelota_jugador.body.position.y = 1
 		pelota_jugador.body.velocity.y = 0
